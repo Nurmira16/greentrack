@@ -1,19 +1,26 @@
-// src/layouts/Layout.jsx
-import React from 'react'
-import Sidebar from '../components/Sidebar'
-import Topbar from '../components/TopBar'
-
+import React from 'react';
+import Sidebar from '../components/Sidebar';
+import Topbar from '../components/TopBar';
+import '../styles/layout.scss'; // import Sass stylesheet
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex flex-col flex-1">
-        <Topbar />
-        <main className="p-6 overflow-y-auto bg-gray-50">{children}</main>
+    <div className="layout">
+      <div className="sidebar">
+        <Sidebar />
+      </div>
+
+      <div className="content">
+        <header>
+          <Topbar />
+        </header>
+
+        <main>
+          {children}
+        </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
