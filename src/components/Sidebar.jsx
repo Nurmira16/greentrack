@@ -1,8 +1,10 @@
 import { FaDumbbell, FaUtensils, FaCalendarAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
+import SidebarAI from './SideBarAI';
 
 const Sidebar = () => {
   return (
+    <>
     <aside className="sidebar">
       <div className="logo">Fitness</div>
       <ul>
@@ -26,6 +28,8 @@ const Sidebar = () => {
         </li>
       </ul>
     </aside>
+    <SidebarAI/>
+    </>
   );
 };
 
