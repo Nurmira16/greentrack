@@ -1,27 +1,23 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
-import '../styles/activity_summary.scss'
-import ActivityCard from './ActivityCard'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import '../styles/activity_summary.scss';
 
-
-const ActivitySummary = () => {
-  const { workoutHours, calories, steps } = useSelector(state => state.activities)
-  const [selected,setSelected]=useState(null)
-
-  const handleClick=(type)=>{
-    setSelected(type)
-  }
+const ActivitySummary = ({ onSelectActivity }) => {
+  const { workoutHours, calories, steps } = useSelector(state => state.activities);
 
   return (
     <div className="summary">
-      <div className="block workout" onClick={()=>handleClick('workout')}>Workout: {workoutHours} hrs</div>
-      <div className="block calories" onClick={()=>handleClick('calories')}>Calories: {calories} kcal</div>
-      <div className="block steps" onClick={()=>handleClick('steps')}>Steps: {steps}</div>
-
-      {selected && <ActivityCard type={selected}/>}
-
+      <div className="block workout" onClick={() => onSelectActivity('workout')}>
+        Workout: {workoutHours} hrs
+      </div>
+      <div className="block calories" onClick={() => onSelectActivity('calories')}>
+        Calories: {calories} kcal
+      </div>
+      <div className="block steps" onClick={() => onSelectActivity('steps')}>
+        Steps: {steps}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default ActivitySummary
+export default ActivitySummary;
