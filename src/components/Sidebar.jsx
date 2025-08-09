@@ -6,7 +6,7 @@ const Sidebar = () => {
   return (
     <>
     <aside className="sidebar">
-      <div className="logo">Fitness</div>
+      <div className="logo">GreenTrack</div>
       <ul>
         <li>
           <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>

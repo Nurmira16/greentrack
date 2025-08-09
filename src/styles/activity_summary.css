@@ -1,0 +1,39 @@
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.summary .block {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+.summary .block:hover {
+  transform: translateY(-4px);
+}
+.summary .block::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+.summary .block.workout::after {
+  background-color: #f97316;
+}
+.summary .block.calories::after {
+  background-color: #22c55e;
+}
+.summary .block.steps::after {
+  background-color: #3b82f6;
+}/*# sourceMappingURL=activity_summary.css.map */

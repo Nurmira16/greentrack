@@ -7,10 +7,11 @@ import '../styles/overview.scss';
 
 const Overview = () => {
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [viewMode, setViewMode] = useState('activity'); // 'activity' | 'week' | 'month'
 
-  // Pass this to ActivitySummary to update which ActivityCard shows
   const handleSelectActivity = (type) => {
     setSelectedActivity(type);
+    setViewMode('activity'); // switch back to activity cards when selecting activity
   };
 
   return (
@@ -29,16 +30,44 @@ const Overview = () => {
             <div className="overlay" />
           </div>
         </div>
-
-        {/* Pass callback prop to ActivitySummary */}
         <ActivitySummary onSelectActivity={handleSelectActivity} />
 
-        {/* Show ActivityCard below summary */}
-        {selectedActivity && <ActivityCard type={selectedActivity} />}
+        
       </div>
 
       <div className="right-panel">
-        <Todolist />
+        <Todolist/>
+
+        {/* Buttons to switch between modes */}
+        <div className="view-mode-buttons">
+          <button
+            className={viewMode === 'activity' ? 'active' : ''}
+            onClick={() => setViewMode('activity')}
+          >
+            Activity Cards
+          </button>
+          <button
+            className={viewMode === 'week' ? 'active' : ''}
+            onClick={() => setViewMode('week')}
+          >
+            Week Plan
+          </button>
+          <button
+            className={viewMode === 'month' ? 'active' : ''}
+            onClick={() => setViewMode('month')}
+          >
+            Month Plan
+          </button>
+        </div>
+
+        {/* Conditionally render based on viewMode */}
+        {viewMode === 'activity' && selectedActivity && (
+          <ActivityCard type={selectedActivity} />
+        )}
+
+        {(viewMode === 'week' || viewMode === 'month') && (
+          <Todolist mode={viewMode} />
+        )}
       </div>
     </div>
   );
