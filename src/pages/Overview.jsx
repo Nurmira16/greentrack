@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import ActivitySummary from '../components/ActivitySummary';
 import ActivityCard from '../components/ActivityCard';
 import Todolist from '../components/Todolist';
-import workoutImg from '../assets/workoutImg.avif';
 import '../styles/overview.scss';
 
 const Overview = () => {
@@ -16,58 +15,36 @@ const Overview = () => {
 
   return (
     <div className="overview-container">
-      <div className="left-panel">
-        <div className="activity-banner">
-          <div className="text-content">
-            <h1>
-              Track Your Daily Activities
-              <span className="underline"></span>
-            </h1>
-            <p>Push harder. Stay stronger. Every day counts.</p>
-          </div>
-          <div className="image-container">
-            <img src={workoutImg} alt="Workout" />
-            <div className="overlay" />
-          </div>
+      {/* Welcome Header */}
+      <div className="welcome-header">
+        <div className="welcome-content">
+          <h1 className="welcome-title">Welcome Back!</h1>
+          <p className="welcome-subtitle">Ready to crush your fitness goals today?</p>
         </div>
-        <ActivitySummary onSelectActivity={handleSelectActivity} />
-
-        
+        <div className="welcome-avatar">
+          <div className="avatar-placeholder">👋</div>
+        </div>
       </div>
 
-      <div className="right-panel">
-        <Todolist/>
-
-        {/* Buttons to switch between modes */}
-        <div className="view-mode-buttons">
-          <button
-            className={viewMode === 'activity' ? 'active' : ''}
-            onClick={() => setViewMode('activity')}
-          >
-            Activity Cards
-          </button>
-          <button
-            className={viewMode === 'week' ? 'active' : ''}
-            onClick={() => setViewMode('week')}
-          >
-            Week Plan
-          </button>
-          <button
-            className={viewMode === 'month' ? 'active' : ''}
-            onClick={() => setViewMode('month')}
-          >
-            Month Plan
-          </button>
+      <div className="overview-content">
+        {/* Activity Banner */}
+        <div className="activity-banner">
+          <div className="text-content">
+            <h2>
+              Track Your Daily Activities
+              <span className="underline"></span>
+            </h2>
+            <p>Push harder. Stay stronger. Every day counts.</p>
+          </div>
         </div>
 
-        {/* Conditionally render based on viewMode */}
-        {viewMode === 'activity' && selectedActivity && (
-          <ActivityCard type={selectedActivity} />
-        )}
+        {/* Activity Summary */}
+        <ActivitySummary onSelectActivity={handleSelectActivity} />
 
-        {(viewMode === 'week' || viewMode === 'month') && (
-          <Todolist mode={viewMode} />
-        )}
+        {/* Todo List */}
+        <Todolist/>
+
+      
       </div>
     </div>
   );

@@ -1,98 +1,229 @@
+// Schedule styles based on Design.json design system
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// Design system variables
+:root {
+  // Primary colors
+  --primary-peach: #FBE9D8;
+  --primary-orange: #F4A261;
+  --primary-purple: #6C63FF;
+  --primary-yellow: #FFB703;
+  
+  // Secondary colors
+  --secondary-white: #FFFFFF;
+  --secondary-light: #F0F0F3;
+  --secondary-gray: #DADADA;
+  
+  // Accent colors
+  --accent-red: #E76F51;
+  --accent-teal: #2A9D8F;
+  --accent-dark: #264653;
+  
+  // Typography
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  
+  // Spacing
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  
+  // Shadows
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
+  // Border radius
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
 .schedule-list {
- 
-        flex: 1;
-        width: 100%;
-        min-height: calc(100vh - 100px); // minus header height
-        background: #fff;
-        border-radius: 16px;
-        padding: 20px;
-        box-sizing: border-box;
-    h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-primary);
+  padding: var(--spacing-xl);
+  
+  h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+  }
+}
+
+.schedule-item {
+  background: var(--secondary-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--secondary-gray);
+  transition: all 0.3s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-purple);
+  }
+  
+  .item-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    
+    img {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-peach);
+      padding: var(--spacing-xs);
     }
-  
-    .schedule-item {
+    
+    .text {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fafafa;
-      border-radius: 12px;
-      padding: 12px 16px;
-      transition: all 0.2s ease;
-  
-      &:hover {
-        background: #f3f3f3;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      
+      .title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--accent-dark);
       }
-  
-      .item-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-  
-        img {
-          width: 40px;
-          height: 40px;
-          object-fit: cover;
-          border-radius: 8px;
-        }
-  
-        .text {
-          display: flex;
-          flex-direction: column;
-  
-          .title {
-            font-weight: 600;
-            color: #444;
-          }
-  
-          .time {
-            font-size: 0.85rem;
-            color: #888;
-          }
-        }
-      }
-  
-      .tag {
-        font-size: 0.8rem;
+      
+      .time {
+        font-size: var(--font-size-sm);
+        color: var(--accent-teal);
         font-weight: 500;
-        background: #ffe6e6;
-        color: #e76f51;
-        padding: 4px 10px;
-        border-radius: 8px;
-        min-width: 60px;
-        text-align: center;
       }
     }
+  }
   
-    .add-form {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
+  .tag {
+    display: inline-block;
+    background: var(--primary-purple);
+    color: var(--secondary-white);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+}
+
+.add-form {
+  background: var(--secondary-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  border: 2px dashed var(--secondary-gray);
+  transition: all 0.3s ease-in-out;
   
-      input,
-      select {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 8px;
-        font-size: 0.9rem;
+  &:hover {
+    border-color: var(--primary-purple);
+    background: var(--primary-peach);
+  }
+  
+  select,
+  input {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--secondary-gray);
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-md);
+    background: var(--secondary-white);
+    transition: all 0.3s ease-in-out;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--primary-purple);
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+    }
+    
+    &::placeholder {
+      color: var(--accent-dark);
+      opacity: 0.6;
+    }
+  }
+  
+  button {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--primary-purple);
+    color: var(--secondary-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: var(--shadow-soft);
+    
+    &:hover {
+      background: var(--primary-orange);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .schedule-list {
+    padding: var(--spacing-md);
+    
+    h2 {
+      font-size: var(--font-size-xl);
+    }
+  }
+  
+  .schedule-item {
+    padding: var(--spacing-md);
+    
+    .item-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      
+      img {
+        width: 40px;
+        height: 40px;
       }
-  
-      button {
-        background: #ff7b54;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 8px 12px;
-        cursor: pointer;
-        transition: background 0.2s ease;
-  
-        &:hover {
-          background: #ff5722;
+      
+      .text {
+        .title {
+          font-size: var(--font-size-base);
         }
       }
     }
   }
+  
+  .add-form {
+    padding: var(--spacing-lg);
+    
+    select,
+    input,
+    button {
+      padding: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+    }
+  }
+}
   

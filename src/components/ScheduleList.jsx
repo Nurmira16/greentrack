@@ -23,25 +23,36 @@ const ScheduleList = () => {
 
   return (
     <div className="schedule-list">
-      <h2>My Schedule</h2>
+      <h2>Planner for Today</h2>
 
-      {schedule.map(item => (
-        <div className="schedule-item" key={item.id}>
-          <div className="item-info">
-            <img
-              src={`/${item.type.toLowerCase()}.png`} // You can swap with real icons
-              alt={item.type}
-            />
-            <div className="text">
-              <span className="title">{item.title}</span>
-              <span className="time">
-                {item.date} at {item.time}
-              </span>
-            </div>
-          </div>
-          <div className="tag">{item.details}</div>
+      {schedule.length === 0 ? (
+        <div className="empty-state">
+          <p>No plans yet. Add your first schedule item to get started!</p>
+          <img 
+            src="/src/assets/loading_mascot.png" 
+            alt="Loading mascot" 
+            className="loading-mascot"
+          />
         </div>
-      ))}
+      ) : (
+        schedule.map(item => (
+          <div className="schedule-item" key={item.id}>
+            <div className="item-info">
+              <img
+                src={`/${item.type.toLowerCase()}.png`} // You can swap with real icons
+                alt={item.type}
+              />
+              <div className="text">
+                <span className="title">{item.title}</span>
+                <span className="time">
+                  {item.date} at {item.time}
+                </span>
+              </div>
+            </div>
+            <div className="tag">{item.details}</div>
+          </div>
+        ))
+      )}
 
       {/* Add form */}
       <div className="add-form">

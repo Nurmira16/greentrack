@@ -1,123 +1,181 @@
 import React, { useEffect, useState } from 'react';
+import { FaEdit, FaCheck, FaTrash } from 'react-icons/fa';
 import '../styles/todolist.scss';
 import supabase from '../supabaseClient';
+import mascot from '../assets/loading_mascot.png';
 
 const Todolist = ({ mode }) => {
   const [input, setInput] = useState('');
   const [weekTodos, setWeekTodos] = useState([]);
   const [monthTodos, setMonthTodos] = useState([]);
   const [noModeTodos, setNoModeTodos] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState('');
 
+  // Fetch todos when component mounts or mode changes
   useEffect(() => {
     getTodos();
-  }, [mode]); // refetch when mode changes
+  }, [mode]);
 
+  // Fetch todos filtered by mode
   const getTodos = async () => {
-    let query = supabase.from('todos').select();
+    try {
+      let query = supabase.from('todos').select();
 
-    if (mode) {
-      query = query.eq('mode', mode); // filter by mode if provided
-    } else {
-      query = query.is('mode', null); // for no mode todos
-    }
+      if (mode) {
+        query = query.eq('mode', mode);
+      } else {
+        query = query.is('mode', null);
+      }
 
-    const { data, error } = await query;
+      const { data, error } = await query;
+      if (error) throw error;
 
-    if (error) {
+      // Sort incomplete first, then completed
+      const sorted = data.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
+
+      if (mode === 'week') setWeekTodos(sorted);
+      else if (mode === 'month') setMonthTodos(sorted);
+      else setNoModeTodos(sorted);
+    } catch (error) {
       console.error('Error fetching todos:', error);
-      return;
-    }
-
-    if (mode === 'week') {
-      setWeekTodos(data.map((t) => t.task));
-    } else if (mode === 'month') {
-      setMonthTodos(data.map((t) => t.task));
-    } else {
-      setNoModeTodos(data.map((t) => t.task));
     }
   };
 
-
-const  addTodo = async () => {
+  // Add a new todo
+  const addTodo = async () => {
     if (input.trim() === '') return;
 
-    // Insert new todo into the table with mode
-    const { error } = await supabase
-      .from('todos')
-      .insert([{ task: input.trim(),mode }]);
+    try {
+      const { error } = await supabase
+        .from('todos')
+        .insert([{ task: input.trim(), mode: mode || null, completed: false }]);
 
-    if (error) {
-      console.error("Error adding todo:", error);
-      return;
+      if (error) throw error;
+      setInput('');
+      await getTodos();
+    } catch (error) {
+      console.error('Error adding todo:', error);
     }
-
-    
-    setInput('');
-    await getTodos()
-    console.log(monthTodos)
   };
 
-  const deleteTodo = async(index) => {
-    const todosList = mode === 'week'
-      ? weekTodos
-      : mode === 'month'
-      ? monthTodos
-      : noModeTodos;
-
-    const taskToDelete = todosList[index];
-
-    let query = supabase.from('todos').delete().eq('task', taskToDelete);
-
-    if (mode) {
-      query = query.eq('mode', mode);
-    } else {
-      query = query.is('mode', null);
-    }
-
-    const { error } = await query;
-
-
-    if (error) {
+  // Delete todo by id
+  const deleteTodo = async (id) => {
+    try {
+      const { error } = await supabase.from('todos').delete().eq('id', id);
+      if (error) throw error;
+      await getTodos();
+    } catch (error) {
       console.error('Error deleting todo:', error);
-      return;
     }
-
-    // Refresh after delete
-    await getTodos();
   };
 
-  
+  // Update todo task text
+  const editTodo = async (id, newTask) => {
+    if (newTask.trim() === '') return;
 
-  const todos = mode === 'week' ? weekTodos : mode==='month'?monthTodos:noModeTodos;
+    try {
+      const { error } = await supabase.from('todos').update({ task: newTask.trim() }).eq('id', id);
+      if (error) throw error;
+      setEditingId(null);
+      setEditValue('');
+      await getTodos();
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
+  };
+
+  // Toggle complete/incomplete
+  const toggleComplete = async (id, completed) => {
+    try {
+      const { error } = await supabase.from('todos').update({ completed: !completed }).eq('id', id);
+      if (error) throw error;
+      await getTodos();
+    } catch (error) {
+      console.error('Error toggling complete:', error);
+    }
+  };
+
+  // Start editing a todo
+  const startEdit = (todo) => {
+    setEditingId(todo.id);
+    setEditValue(todo.task);
+  };
+
+  // Select todos array based on mode
+  const todos = mode === 'week' ? weekTodos : mode === 'month' ? monthTodos : noModeTodos;
 
   return (
     <div className="todolist-container">
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="todolist-input"
-        placeholder={`Add new ${mode} todo`}
-      />
-      <button onClick={addTodo} className="todolist-button">
-        Add
-      </button>
+      <div className="todolist-input-group">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="todolist-input"
+          placeholder={`Add new ${mode || 'daily'} todo`}
+        />
+        <button onClick={addTodo} className="todolist-button">
+          Add
+        </button>
+      </div>
 
       <div className="todolist-output">
-        <ul className="todolist-list">
-          {todos.map((todo, index) => (
-            <li key={index} className="todolist-item">
-              {todo}
-              <button
-                onClick={() => deleteTodo(index)}
-                className="todolist-delete-btn"
-                aria-label={`Delete todo ${todo}`}
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
+        {todos.length === 0 ? (
+          <div className="no-tasks">
+            <p>No tasks yet</p>
+            <img src={mascot} alt="Loading mascot" className="loading-mascot" />
+          </div>
+        ) : (
+          <ul className="todolist-list">
+            {todos.map((todo) => (
+              <li key={todo.id} className={`todolist-item ${todo.completed ? 'completed' : ''}`}>
+                {editingId === todo.id ? (
+                  <input
+                    type="text"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => editTodo(todo.id, editValue)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') editTodo(todo.id, editValue);
+                    }}
+                    className="edit-input"
+                    autoFocus
+                  />
+                ) : (
+                  <span className="todo-text">{todo.task}</span>
+                )}
+
+                <div className="todo-actions">
+                  <button
+                    onClick={() => toggleComplete(todo.id, todo.completed)}
+                    className={`action-btn complete-btn ${todo.completed ? 'completed' : ''}`}
+                    aria-label={`Mark ${todo.completed ? 'incomplete' : 'complete'}`}
+                    title={todo.completed ? 'Mark incomplete' : 'Mark complete'}
+                  >
+                    <FaCheck />
+                  </button>
+                  <button
+                    onClick={() => startEdit(todo)}
+                    className="action-btn edit-btn"
+                    aria-label="Edit todo"
+                    title="Edit todo"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => deleteTodo(todo.id)}
+                    className="action-btn delete-btn"
+                    aria-label="Delete todo"
+                    title="Delete todo"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

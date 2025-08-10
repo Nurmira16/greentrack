@@ -1,20 +1,12 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
-import Topbar from '../components/TopBar';
-import '../styles/layout.scss'; // import Sass stylesheet
+import Navigation from '../components/Navigation';
+import '../styles/layout.scss';
 
 const Layout = ({ children }) => {
   return (
     <div className="layout">
-      <div className="sidebar">
-        <Sidebar />
-      </div>
-
+      <Navigation />
       <div className="content">
-        <header>
-          <Topbar />
-        </header>
-
         <main>
           {children}
         </main>

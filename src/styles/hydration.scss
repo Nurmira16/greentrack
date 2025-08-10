@@ -1,0 +1,451 @@
+// Hydration styles based on Design.json design system
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// Design system variables
+:root {
+  // Primary colors
+  --primary-peach: #FBE9D8;
+  --primary-orange: #F4A261;
+  --primary-purple: #6C63FF;
+  --primary-yellow: #FFB703;
+  
+  // Secondary colors
+  --secondary-white: #FFFFFF;
+  --secondary-light: #F0F0F3;
+  --secondary-gray: #DADADA;
+  
+  // Accent colors
+  --accent-red: #E76F51;
+  --accent-teal: #2A9D8F;
+  --accent-dark: #264653;
+  
+  // Typography
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  
+  // Spacing
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  
+  // Shadows
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
+  // Border radius
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+.hydration-container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: var(--font-primary);
+}
+
+.hydration-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  
+  .hydration-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .hydration-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--accent-teal);
+    font-weight: 500;
+  }
+}
+
+.hydration-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+.water-progress {
+  text-align: center;
+  
+  .progress-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto var(--spacing-lg);
+    
+    @media (max-width: 768px) {
+      width: 150px;
+      height: 150px;
+    }
+    
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      
+      .progress-center {
+        width: 80%;
+        height: 80%;
+        background: var(--secondary-white);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-soft);
+        
+        .water-icon {
+          font-size: var(--font-size-xl);
+          color: var(--primary-purple);
+          margin-bottom: var(--spacing-xs);
+        }
+        
+        .current-intake {
+          font-size: var(--font-size-lg);
+          font-weight: 700;
+          color: var(--accent-dark);
+          margin-bottom: var(--spacing-xs);
+        }
+        
+        .daily-goal {
+          font-size: var(--font-size-sm);
+          color: var(--accent-teal);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+  .progress-info {
+    .progress-percentage {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--primary-purple);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .progress-status {
+      font-size: var(--font-size-base);
+      color: var(--accent-dark);
+      font-weight: 500;
+    }
+  }
+}
+
+.water-controls {
+  background: var(--secondary-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--secondary-gray);
+  
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    
+    .control-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: var(--shadow-soft);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+      
+      &.add-btn {
+        background: var(--accent-teal);
+        color: var(--secondary-white);
+        
+        &:hover {
+          background: var(--accent-dark);
+        }
+      }
+      
+      &.remove-btn {
+        background: var(--accent-red);
+        color: var(--secondary-white);
+        
+        &:hover {
+          background: var(--accent-dark);
+        }
+      }
+    }
+  }
+}
+
+.goal-section {
+  background: var(--secondary-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--secondary-gray);
+  
+  .goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    
+    h3 {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin: 0;
+    }
+    
+    .edit-goal-btn {
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--primary-purple);
+      color: var(--secondary-white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-primary);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      
+      &:hover {
+        background: var(--primary-orange);
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  .current-goal {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    
+    .goal-icon {
+      font-size: var(--font-size-lg);
+      color: var(--primary-purple);
+    }
+    
+    span {
+      font-size: var(--font-size-base);
+      color: var(--accent-dark);
+      font-weight: 500;
+    }
+  }
+}
+
+.intake-history {
+  background: var(--secondary-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--secondary-gray);
+  
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-md);
+      background: var(--secondary-light);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--accent-teal);
+      
+      .history-time {
+        font-size: var(--font-size-sm);
+        color: var(--accent-dark);
+        font-weight: 500;
+      }
+      
+      .history-amount {
+        font-size: var(--font-size-base);
+        color: var(--accent-teal);
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .empty-history {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--accent-dark);
+    opacity: 0.6;
+    font-style: italic;
+  }
+}
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  
+  .modal-content {
+    background: var(--secondary-white);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-medium);
+    max-width: 400px;
+    width: 90%;
+    
+    h3 {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .goal-input {
+      width: 100%;
+      padding: var(--spacing-md);
+      border: 2px solid var(--secondary-gray);
+      border-radius: var(--radius-md);
+      font-family: var(--font-primary);
+      font-size: var(--font-size-base);
+      margin-bottom: var(--spacing-lg);
+      transition: all 0.3s ease-in-out;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+      }
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      
+      .cancel-btn,
+      .save-btn {
+        flex: 1;
+        padding: var(--spacing-md);
+        border: none;
+        border-radius: var(--radius-md);
+        font-family: var(--font-primary);
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+      
+      .cancel-btn {
+        background: var(--secondary-gray);
+        color: var(--accent-dark);
+        
+        &:hover {
+          background: var(--accent-dark);
+          color: var(--secondary-white);
+        }
+      }
+      
+      .save-btn {
+        background: var(--primary-purple);
+        color: var(--secondary-white);
+        
+        &:hover {
+          background: var(--primary-orange);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hydration-container {
+    padding: var(--spacing-md);
+  }
+  
+  .hydration-header {
+    .hydration-title {
+      font-size: var(--font-size-xl);
+    }
+  }
+  
+  .water-progress {
+    .progress-circle {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .progress-info {
+      .progress-percentage {
+        font-size: var(--font-size-xl);
+      }
+    }
+  }
+  
+  .water-controls,
+  .goal-section,
+  .intake-history {
+    padding: var(--spacing-lg);
+  }
+  
+  .modal-content {
+    margin: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+}

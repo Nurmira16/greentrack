@@ -1,0 +1,89 @@
+{
+    "design_system": {
+      "style": {
+        "theme": "modern, minimalistic, playful",
+        "color_palette": {
+          "primary_colors": ["#FBE9D8", "#F4A261", "#6C63FF", "#FFB703"],
+          "secondary_colors": ["#FFFFFF", "#F0F0F3", "#DADADA"],
+          "accent_colors": ["#E76F51", "#2A9D8F", "#264653"],
+          "usage_notes": "Bright, warm colors with high contrast accents; neutral backgrounds."
+        },
+        "typography": {
+          "primary_font": "Rounded sans-serif",
+          "font_weights": ["Regular", "Medium", "Bold"],
+          "font_sizes": ["12px", "14px", "16px", "18px", "20px", "24px"],
+          "usage_notes": "Headings are bold and medium-large; body text is medium weight."
+        },
+        "iconography": {
+          "style": "flat, filled icons with smooth edges",
+          "size_range": "16px - 32px",
+          "color_usage": "Match accent colors; minimal outlines."
+        },
+        "illustrations": {
+          "style": "playful, flat, vector-based",
+          "color_treatment": "Bright gradients or flat fills matching the palette",
+          "placement": "Used in headers and callout sections"
+        }
+      },
+      "layout": {
+        "screen_structure": {
+          "header": {
+            "alignment": "left",
+            "elements": ["avatar", "greeting text", "progress indicator"]
+          },
+          "main_sections": [
+            {
+              "type": "card_grid",
+              "properties": {
+                "card_shape": "rounded rectangle (16px radius)",
+                "card_background": "solid color from palette",
+                "spacing": "16px between cards"
+              }
+            },
+            {
+              "type": "list_view",
+              "properties": {
+                "item_height": "compact (56px - 72px)",
+                "divider_style": "none, use spacing separation"
+              }
+            }
+          ],
+          "footer_navigation": {
+            "style": "tab bar",
+            "background": "neutral light",
+            "icons": "flat, rounded, filled",
+            "active_indicator": "dot or underline"
+          }
+        },
+        "component_spacing": {
+          "padding": "16px - 24px",
+          "margin_between_sections": "24px"
+        },
+        "progress_visuals": {
+          "types": ["bar chart", "circle progress"],
+          "color_usage": "Primary color for fill, light neutral for background"
+        }
+      },
+      "ui_patterns": {
+        "cards": {
+          "shadow": "soft drop shadow",
+          "radius": "16px",
+          "content_alignment": "center or left-aligned"
+        },
+        "charts": {
+          "style": "minimal with rounded bars",
+          "axis_display": "hidden or subtle"
+        },
+        "buttons": {
+          "shape": "pill or rounded rectangle",
+          "primary_color_usage": "fill with white icon or text",
+          "secondary_color_usage": "outline with primary color"
+        }
+      },
+      "animation": {
+        "transitions": "smooth ease-in-out",
+        "micro_interactions": "button press scaling, card hover elevation"
+      }
+    }
+  }
+  

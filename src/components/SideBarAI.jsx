@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import '../styles/sidebarai.scss'
+import mascot from '../assets/loading_mascot.png'
 
 const SidebarAI = () => {
   const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
@@ -54,8 +55,17 @@ const SidebarAI = () => {
 
       <button onClick={handleAsk}>Ask AI</button>
 
-      {response && (
+      {response ? (
         <div className="ai-response">{response}</div>
+      ) : (
+        <div className="empty-state">
+          <p>No AI response yet. Ask a question to get started!</p>
+          <img 
+            src={mascot}
+            alt="Loading mascot" 
+            className="loading-mascot"
+          />
+        </div>
       )}
     </div>
   );
