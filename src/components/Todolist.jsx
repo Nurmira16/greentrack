@@ -6,11 +6,11 @@ import mascot from '../assets/loading_mascot.png';
 
 const Todolist = ({ mode }) => {
   const [input, setInput] = useState('');
-  const [weekTodos, setWeekTodos] = useState([]);
-  const [monthTodos, setMonthTodos] = useState([]);
-  const [noModeTodos, setNoModeTodos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [todos, setTodos] = useState([]);
+
+
 
   // Fetch todos when component mounts or mode changes
   useEffect(() => {
@@ -21,43 +21,47 @@ const Todolist = ({ mode }) => {
   const getTodos = async () => {
     try {
       let query = supabase.from('todos').select();
-
-      if (mode) {
-        query = query.eq('mode', mode);
+  
+      if (mode === 'week') {
+        query = query.eq('mode', 'week');
+      } else if (mode === 'month') {
+        query = query.eq('mode', 'month');
       } else {
-        query = query.is('mode', null);
+        query = query.eq('mode', 'day'); // daily todos
       }
-
+  
       const { data, error } = await query;
       if (error) throw error;
-
+  
       // Sort incomplete first, then completed
       const sorted = data.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
-
-      if (mode === 'week') setWeekTodos(sorted);
-      else if (mode === 'month') setMonthTodos(sorted);
-      else setNoModeTodos(sorted);
+  
+      setTodos(sorted); // set the todos state
     } catch (error) {
       console.error('Error fetching todos:', error);
     }
   };
-
+  
+  
   // Add a new todo
   const addTodo = async () => {
     if (input.trim() === '') return;
-
+  
     try {
+      const todoMode = mode || 'day'; // default to 'day' instead of null
       const { error } = await supabase
         .from('todos')
-        .insert([{ task: input.trim(), mode: mode || null, completed: false }]);
-
+        .insert([{ task: input.trim(), mode: todoMode, completed: false }]);
+  
       if (error) throw error;
+  
       setInput('');
       await getTodos();
     } catch (error) {
       console.error('Error adding todo:', error);
     }
   };
+  
 
   // Delete todo by id
   const deleteTodo = async (id) => {
@@ -101,9 +105,6 @@ const Todolist = ({ mode }) => {
     setEditingId(todo.id);
     setEditValue(todo.task);
   };
-
-  // Select todos array based on mode
-  const todos = mode === 'week' ? weekTodos : mode === 'month' ? monthTodos : noModeTodos;
 
   return (
     <div className="todolist-container">

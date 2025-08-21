@@ -28,7 +28,7 @@ const Navigation = () => {
   const menuItems = [
     { path: '/', label: 'Overview', icon: FaChartLine },
     { path: '/expenses', label: 'Expenses', icon: FaCreditCard },
-    { path: '/todo', label: 'To-Do App', icon: FaCheckSquare },
+    { path: '/todopage', label: 'To-Do App', icon: FaCheckSquare },
     { path: '/goals', label: 'Goals', icon: FaBullseye },
     { path: '/planner', label: 'Planner for Today', icon: FaCalendarDay },
     { path: '/hydration', label: 'Hydration', icon: FaTint },

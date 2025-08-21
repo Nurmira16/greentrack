@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ActivitySummary from '../components/ActivitySummary';
-import ActivityCard from '../components/ActivityCard';
 import Todolist from '../components/Todolist';
 import '../styles/overview.scss';
 

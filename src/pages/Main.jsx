@@ -9,6 +9,7 @@ import Todolist from '../components/Todolist';
 import SideBarAI from '../components/SideBarAI';
 import Expenses from '../components/Expenses';
 import Hydration from '../components/Hydration';
+import TodoPage from '../components/TodoPage';
 
 const Main = () => {
     return (
@@ -17,6 +18,7 @@ const Main = () => {
                 <Route path="/" element={<Overview />} />
                 <Route path="/expenses" element={<Expenses />} />
                 <Route path="/todo" element={<Todolist />} />
+                <Route path="/todopage" element={<TodoPage />} />
                 <Route path="/goals" element={<GoalList />} />
                 <Route path="/planner" element={<ScheduleList />} />
                 <Route path="/hydration" element={<Hydration />} />

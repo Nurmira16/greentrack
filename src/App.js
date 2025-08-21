@@ -6,22 +6,22 @@ import supabase from './supabaseClient'
 
 
 const App = () => {
-  const [instruments, setInstruments] = useState([]);
-  useEffect(() => {
-    getInstruments();
-  }, []);
-  async function getInstruments() {
-    const { data } = await supabase.from("todos").select();
-    setInstruments(data);
-  }
+  // const [instruments, setInstruments] = useState([]);
+  // useEffect(() => {
+  //   getInstruments();
+  // }, []);
+  // async function getInstruments() {
+  //   const { data } = await supabase.from("todos").select();
+  //   setInstruments(data);
+  // }
   return (
     <div>
       <Layout>
-      <ul>
+      {/* <ul>
       {instruments?.map((instrument) => (
         <li key={instrument.id}>{instrument.task}</li>
       ))}
-    </ul>
+    </ul> */}
       <Main/>
       </Layout>
     </div>
