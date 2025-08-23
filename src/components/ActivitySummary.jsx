@@ -1,42 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import supabase from '../supabaseClient';
 import '../styles/activity_summary.scss';
 
-const ActivityCircle = ({ label, current, target, color, onIncrement, onDecrement }) => {
+// 🔹 Single Row Component
+const ActivityRow = ({ label, field, current, target, color, onIncrement, onDecrement }) => {
   const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
   return (
-    <div className="circle-container">
-      <CircularProgressbar
-        value={percentage}
-        text={`${current}`}
-        styles={buildStyles({
-          textColor: '#264653',
-          pathColor: color,
-          trailColor: '#F0F0F3',
-          textSize: '16px',
-          strokeLinecap: 'round'
-        })}
-      />
-      <div className="circle-label">{label}</div>
-      <div className="circle-buttons">
+    <div className="activity-row">
+      <div className="info">
+        <span className="label">{label}</span>
+        <span className="target-info">{current} / {target}</span>
+      </div>
+
+      <div className="progress-wrapper">
+        <div className="progress-bar">
+          <div
+            className="fill"
+            style={{ width: `${percentage}%`, background: color }}
+          />
+        </div>
+      </div>
+
+      <div className="controls">
         <button onClick={onDecrement} className="control-btn minus"><FaMinus /></button>
         <button onClick={onIncrement} className="control-btn plus"><FaPlus /></button>
       </div>
-      <small className="target">Target: {target}</small>
     </div>
   );
 };
 
+// 🔹 Main Summary Component
 const ActivitySummary = () => {
   const [activities, setActivities] = useState(null);
 
   useEffect(() => {
     const getActivities = async () => {
-      // 1. Try to fetch the first activities row
       const { data: activitiesData, error } = await supabase
         .from('activities')
         .select('*')
@@ -44,7 +44,7 @@ const ActivitySummary = () => {
         .single();
 
       if (error && error.code === 'PGRST116') {
-        // No row found, insert default
+        // no row found, insert default
         const { data: newRow, error: insertError } = await supabase
           .from('activities')
           .insert([{
@@ -90,8 +90,8 @@ const ActivitySummary = () => {
   if (!activities) return <p>Loading...</p>;
 
   return (
-    <div className="summary-circles">
-      <ActivityCircle
+    <div className="summary-rows">
+      <ActivityRow
         label="Workout"
         current={activities.workout_current}
         target={activities.workout_target}
@@ -99,7 +99,8 @@ const ActivitySummary = () => {
         onIncrement={() => updateActivity('workout_current', activities.workout_current + 1)}
         onDecrement={() => updateActivity('workout_current', Math.max(0, activities.workout_current - 1))}
       />
-      <ActivityCircle
+
+      <ActivityRow
         label="Calories"
         current={activities.calories_current}
         target={activities.calories_target}
@@ -107,7 +108,8 @@ const ActivitySummary = () => {
         onIncrement={() => updateActivity('calories_current', activities.calories_current + 100)}
         onDecrement={() => updateActivity('calories_current', Math.max(0, activities.calories_current - 100))}
       />
-      <ActivityCircle
+
+      <ActivityRow
         label="Steps"
         current={activities.steps_current}
         target={activities.steps_target}

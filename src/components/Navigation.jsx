@@ -29,8 +29,6 @@ const Navigation = () => {
     { path: '/', label: 'Overview', icon: FaChartLine },
     { path: '/expenses', label: 'Expenses', icon: FaCreditCard },
     { path: '/todopage', label: 'To-Do App', icon: FaCheckSquare },
-    { path: '/goals', label: 'Goals', icon: FaBullseye },
-    { path: '/planner', label: 'Planner for Today', icon: FaCalendarDay },
     { path: '/hydration', label: 'Hydration', icon: FaTint },
     { path: '/ai-helper', label: 'AI Helper', icon: FaRobot }
   ];

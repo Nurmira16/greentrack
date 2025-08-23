@@ -1,0 +1,22 @@
+.hadith-card {
+    background: var(--secondary-white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+  
+    .hadith-text {
+      font-size: var(--font-size-base);
+      font-style: italic;
+      color: var(--accent-dark);
+      margin-bottom: var(--spacing-sm);
+    }
+  
+    .hadith-reference {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--accent-teal);
+    }
+  }
+  
