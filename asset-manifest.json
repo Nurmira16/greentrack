@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/greentrack/static/css/main.7eb0e839.css",
+    "main.js": "/greentrack/static/js/main.9333e5a0.js",
+    "static/media/loading_mascot.png": "/greentrack/static/media/loading_mascot.4bb31ae13aa243cad822.png",
+    "index.html": "/greentrack/index.html",
+    "main.7eb0e839.css.map": "/greentrack/static/css/main.7eb0e839.css.map",
+    "main.9333e5a0.js.map": "/greentrack/static/js/main.9333e5a0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7eb0e839.css",
+    "static/js/main.9333e5a0.js"
+  ]
+}
