@@ -1,181 +1,101 @@
-// SideBarAI styles based on Design.json design system
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-// Design system variables
-:root {
-  // Primary colors
-  --primary-peach: #FBE9D8;
-  --primary-orange: #F4A261;
-  --primary-purple: #6C63FF;
-  --primary-yellow: #FFB703;
-  
-  // Secondary colors
-  --secondary-white: #FFFFFF;
-  --secondary-light: #F0F0F3;
-  --secondary-gray: #DADADA;
-  
-  // Accent colors
-  --accent-red: #E76F51;
-  --accent-teal: #2A9D8F;
-  --accent-dark: #264653;
-  
-  // Typography
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
-  
-  // Spacing
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 16px;
-  --spacing-lg: 20px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
-  
-  // Shadows
-  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
-  
-  // Border radius
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-}
-
 .sidebar-ai {
-  background: var(--secondary-white);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xl);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--secondary-gray);
-  font-family: var(--font-primary);
-  max-width: 400px;
-  margin: 0 auto;
-  
-  .ai-title {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--accent-dark);
-    margin-bottom: var(--spacing-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1), transparent 70%);
+    animation: rotate-bg 60s linear infinite;
+    top: -50%;
+    left: -50%;
+    z-index: 0;
+  }
+
+  .ai-container {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    max-width: 500px;
+    width: 100%;
     text-align: center;
-  }
-  
-  select {
-    width: 100%;
-    padding: var(--spacing-md);
-    border: 2px solid var(--secondary-gray);
-    border-radius: var(--radius-md);
-    font-family: var(--font-primary);
-    font-size: var(--font-size-base);
-    background: var(--secondary-white);
-    color: var(--accent-dark);
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    margin-bottom: var(--spacing-md);
-    
-    &:focus {
-      outline: none;
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
-    }
-  }
-  
-  textarea {
-    width: 100%;
-    padding: var(--spacing-md);
-    border: 2px solid var(--secondary-gray);
-    border-radius: var(--radius-md);
-    font-family: var(--font-primary);
-    font-size: var(--font-size-base);
-    resize: vertical;
-    min-height: 80px;
-    margin-bottom: var(--spacing-md);
-    transition: all 0.3s ease-in-out;
-    
-    &:focus {
-      outline: none;
-      border-color: var(--primary-purple);
-      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
-    }
-    
-    &::placeholder {
-      color: var(--accent-dark);
-      opacity: 0.6;
-    }
-  }
-  
-  button {
-    width: 100%;
-    padding: var(--spacing-md);
-    background: var(--primary-purple);
-    color: var(--secondary-white);
-    border: none;
-    border-radius: var(--radius-md);
-    font-family: var(--font-primary);
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    box-shadow: var(--shadow-soft);
-    margin-bottom: var(--spacing-lg);
-    
-    &:hover {
-      background: var(--primary-orange);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-medium);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-  }
-  
-  .ai-response {
-    background: var(--primary-peach);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-md);
-    border-left: 4px solid var(--primary-purple);
-    font-size: var(--font-size-sm);
-    line-height: 1.5;
-    color: var(--accent-dark);
-    animation: fadeIn 0.3s ease-in-out;
-  }
-}
+    font-family: 'Inter', sans-serif;
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .sidebar-ai {
-    margin: var(--spacing-md);
-    padding: var(--spacing-lg);
-    
-    .ai-title {
-      font-size: var(--font-size-lg);
+    h2 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #333;
     }
-    
-    select,
-    textarea,
+
+    select, textarea {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+    }
+
     button {
-      padding: var(--spacing-sm);
-      font-size: var(--font-size-sm);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      background: #6C63FF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      }
+    }
+
+    .ai-response {
+      font-size: 1rem;
+      color: #333;
+      min-height: 60px;
+      margin-top: 1rem;
+    
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    
+        p {
+          margin-bottom: 0.5rem;
+          font-style: italic;
+          color: #555;
+        }
+    
+        .loading-mascot {
+          width: 80px;
+          max-width: 20vw;
+          height: auto;
+          opacity: 0.3;       // make mascot less visible
+          filter: blur(1px);  // optional subtle blur
+          transition: opacity 0.3s ease;
+        }
+      }
     }
     
-    textarea {
-      min-height: 60px;
-    }
   }
+}
+
+@keyframes rotate-bg {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

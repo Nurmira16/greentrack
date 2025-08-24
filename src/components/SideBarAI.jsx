@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import '../styles/sidebarai.scss'
-import mascot from '../assets/loading_mascot.png'
+import '../styles/sidebarai.scss';
+import mascot from '../assets/loading_mascot.png';
 
 const SidebarAI = () => {
   const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
@@ -9,15 +9,12 @@ const SidebarAI = () => {
   const [mode, setMode] = useState("meal");
 
   const handleAsk = async () => {
-    let prompt = "";
+    if (!input.trim()) return;
 
-    if (mode === "meal") {
-      prompt = `Suggest a healthy meal after this activity:\n\n${input}\n\nRespond briefly in 1–2 sentences. Do not use markdown or formatting.`;
-    } else if (mode === "workout") {
-      prompt = `Suggest a quick workout for this input:\n\n${input}\n\nRespond briefly in 1–2 sentences.`;
-    } else if (mode === "explain") {
-      prompt = `Explain this in simple fitness terms:\n\n${input}\n\nKeep it short. No formatting.`;
-    }
+    let prompt = "";
+    if (mode === "meal") prompt = `Suggest a healthy meal after: ${input}`;
+    if (mode === "workout") prompt = `Suggest a quick workout for: ${input}`;
+    if (mode === "explain") prompt = `Explain this in simple terms: ${input}`;
 
     const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
       method: "POST",
@@ -32,42 +29,40 @@ const SidebarAI = () => {
     });
 
     const data = await res.json();
-    console.log(data)
     setResponse(data.choices?.[0]?.message?.content.trim() ?? "No reply.");
   };
 
   return (
     <div className="sidebar-ai">
-      <div className="ai-title">AI Helper</div>
+      <div className="ai-container">
+        <h2>AI Helper</h2>
 
-      <select value={mode} onChange={(e) => setMode(e.target.value)}>
-        <option value="meal">Suggest Meal</option>
-        <option value="workout">Suggest Workout</option>
-        <option value="explain">Explain Something</option>
-      </select>
+        <select value={mode} onChange={(e) => setMode(e.target.value)}>
+          <option value="meal">Suggest Meal</option>
+          <option value="workout">Suggest Workout</option>
+          <option value="explain">Explain Something</option>
+        </select>
 
-      <textarea
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        rows={3}
-        placeholder="Enter your activity or question..."
-      />
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          rows={3}
+          placeholder="Enter your activity or question..."
+        />
 
-      <button onClick={handleAsk}>Ask AI</button>
+        <button onClick={handleAsk}>Ask AI</button>
 
-      {response ? (
-        <div className="ai-response">{response}</div>
-      ) : (
-        <div className="empty-state">
-          <p>No AI response yet. Ask a question to get started!</p>
-          <img 
-            src={mascot}
-            alt="Loading mascot" 
-            className="loading-mascot"
-          />
+        <div className="ai-response">
+          {response ? response : (
+            <div className="empty-state">
+              <p>No AI response yet. Ask a question to get started!</p>
+              <img src={mascot} alt="Loading mascot" className="loading-mascot" />
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
+
 export default SidebarAI;

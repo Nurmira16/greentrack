@@ -1,179 +1,244 @@
-import React, { useState } from 'react';
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
 import '../styles/expenses.scss';
-import mascot from '../assets/loading_mascot.png'
+import supabase from '../supabaseClient';
+import { FaTrash } from 'react-icons/fa';
 
+const categoryList = ['food', 'transport', 'gifts', 'rent', 'extra'];
+
+const getCategoryGradient = (category) => {
+  const gradients = {
+    food: 'linear-gradient(135deg, #E76F51, #F4A261)',
+    transport: 'linear-gradient(135deg, #6C63FF, #9D7CFC)',
+    gifts: 'linear-gradient(135deg, #FFB703, #FFD166)',
+    rent: 'linear-gradient(135deg, #F4A261, #E9C46A)',
+    extra: 'linear-gradient(135deg, #2A9D8F, #43BCCD)'
+  };
+  return gradients[category] || '#264653';
+};
+
+const currentMonth = new Date().getMonth() + 1;
+const currentYear = new Date().getFullYear();
 
 const Expenses = () => {
-  const [expenses, setExpenses] = useState([
-    { id: 1, title: 'Grocery Shopping', amount: 85.50, category: 'food', date: '2024-01-15' },
-    { id: 2, title: 'Gym Membership', amount: 45.00, category: 'fitness', date: '2024-01-10' },
-    { id: 3, title: 'Transportation', amount: 120.00, category: 'transport', date: '2024-01-12' }
-  ]);
-  
-  const [newExpense, setNewExpense] = useState({
-    title: '',
-    amount: '',
-    category: 'food',
-    date: ''
-  });
-  
-  const [editingId, setEditingId] = useState(null);
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({ title: '', amount: '', category: 'food', date: '' });
 
-  const addExpense = () => {
-    if (newExpense.title && newExpense.amount && newExpense.date) {
-      const expense = {
-        id: Date.now(),
-        ...newExpense,
-        amount: parseFloat(newExpense.amount)
-      };
-      setExpenses([...expenses, expense]);
-      setNewExpense({ title: '', amount: '', category: 'food', date: '' });
-    }
+  const [viewMonth, setViewMonth] = useState(currentMonth);
+  const [viewYear, setViewYear] = useState(currentYear);
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [viewMonth, viewYear]);
+
+  const fetchExpenses = async () => {
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('*')
+      .gte('date', `${viewYear}-${String(viewMonth).padStart(2, '0')}-01`)
+      .lte('date', `${viewYear}-${String(viewMonth).padStart(2, '0')}-31`);
+    if (!error) setExpenses(data);
   };
 
-  const deleteExpense = (id) => {
-    setExpenses(expenses.filter(expense => expense.id !== id));
-  };
+  const addExpense = async () => {
+    if (!newExpense.title || !newExpense.amount || !newExpense.date) return;
 
-  const startEdit = (expense) => {
-    setEditingId(expense.id);
-    setNewExpense({
-      title: expense.title,
-      amount: expense.amount.toString(),
-      category: expense.category,
-      date: expense.date
-    });
-  };
-
-  const saveEdit = () => {
-    if (editingId && newExpense.title && newExpense.amount && newExpense.date) {
-      setExpenses(expenses.map(expense => 
-        expense.id === editingId 
-          ? { ...expense, ...newExpense, amount: parseFloat(newExpense.amount) }
-          : expense
-      ));
-      setEditingId(null);
-      setNewExpense({ title: '', amount: '', category: 'food', date: '' });
-    }
-  };
-
-  const getCategoryColor = (category) => {
-    const colors = {
-      food: 'var(--accent-red)',
-      fitness: 'var(--accent-teal)',
-      transport: 'var(--primary-purple)',
-      entertainment: 'var(--primary-yellow)',
-      health: 'var(--primary-orange)'
+    const expenseToInsert = { 
+      ...newExpense, 
+      amount: parseFloat(newExpense.amount) 
     };
-    return colors[category] || 'var(--accent-dark)';
+
+    const expenseDate = new Date(newExpense.date);
+    const expenseMonth = expenseDate.getMonth() + 1;
+    const expenseYear = expenseDate.getFullYear();
+
+    const { data: insertedData, error: insertError } = await supabase
+      .from('expenses')
+      .insert([expenseToInsert])
+      .select();
+
+    if (insertError) {
+      console.error(insertError);
+      return;
+    }
+    if (!insertedData || insertedData.length === 0) return;
+
+    const insertedExpense = insertedData[0];
+
+    const { data: currentHistory, error: fetchError } = await supabase
+      .from('monthly_expense_history')
+      .select('id, total')
+      .eq('month', expenseMonth)
+      .eq('year', expenseYear)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error(fetchError);
+    }
+
+    if (currentHistory) {
+      const newTotal = currentHistory.total + expenseToInsert.amount;
+      await supabase
+        .from('monthly_expense_history')
+        .update({ total: newTotal })
+        .eq('id', currentHistory.id);
+    } else {
+      await supabase
+        .from('monthly_expense_history')
+        .insert([
+          {
+            month: expenseMonth,
+            year: expenseYear,
+            total: expenseToInsert.amount
+          }
+        ]);
+    }
+
+    if (expenseMonth === viewMonth && expenseYear === viewYear) {
+      setExpenses([...expenses, insertedExpense]);
+    }
+
+    setNewExpense({ title: '', amount: '', category: 'food', date: '' });
   };
 
-  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const deleteExpense = async (id, category, amount, date) => {
+    const expenseDate = new Date(date);
+    const expenseMonth = expenseDate.getMonth() + 1;
+    const expenseYear = expenseDate.getFullYear();
 
+    const { error } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error("Delete Error:", error);
+      return;
+    }
+
+    setExpenses(expenses.filter(e => e.id !== id));
+
+    const { data: currentMonthTotal } = await supabase
+      .from('monthly_expense_history')
+      .select('*')
+      .eq('month', expenseMonth)
+      .eq('year', expenseYear)
+      .single();
+
+    if (currentMonthTotal) {
+      const newTotal = currentMonthTotal.total - amount;
+      await supabase
+        .from('monthly_expense_history')
+        .update({ total: newTotal >= 0 ? newTotal : 0 })
+        .eq('id', currentMonthTotal.id);
+    }
+  };
+
+  const categoryTotals = categoryList.reduce((acc, cat) => {
+    acc[cat] = expenses
+      .filter(e => e.category === cat)
+      .reduce((sum, e) => sum + e.amount, 0);
+    return acc;
+  }, {});
+
+  const monthlyTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
   return (
     <div className="expenses-container">
-      <div className="expenses-header">
-        <h1 className="expenses-title">Expense Tracker</h1>
-        <p className="expenses-subtitle">Track your spending and stay on budget</p>
-        <div className="total-expenses">
-          <span className="total-label">Total:</span>
-          <span className="total-amount">${totalExpenses.toFixed(2)}</span>
-        </div>
-      </div>
+      <h2>Expense Tracker</h2>
 
       <div className="expense-form">
-        <div className="form-row">
-          <input
-            type="text"
-            value={newExpense.title}
-            onChange={(e) => setNewExpense({ ...newExpense, title: e.target.value })}
-            placeholder="Expense title..."
-            className="expense-input"
-          />
-          <input
-            type="number"
-            value={newExpense.amount}
-            onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-            placeholder="Amount"
-            className="expense-input"
-            step="0.01"
-            min="0"
-          />
-        </div>
-        <div className="form-row">
-          <select
-            value={newExpense.category}
-            onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-            className="category-select"
-          >
-            <option value="food">Food</option>
-            <option value="fitness">Fitness</option>
-            <option value="transport">Transport</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="health">Health</option>
-          </select>
-          <input
-            type="date"
-            value={newExpense.date}
-            onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-            className="expense-input"
-          />
-        </div>
-        <button 
-          onClick={editingId ? saveEdit : addExpense} 
-          className="expense-btn"
+        <input
+          type="text"
+          placeholder="Title"
+          value={newExpense.title}
+          onChange={e => setNewExpense({ ...newExpense, title: e.target.value })}
+        />
+        <input
+          type="number"
+          placeholder="Amount"
+          value={newExpense.amount}
+          onChange={e => setNewExpense({ ...newExpense, amount: e.target.value })}
+        />
+        <input
+          type="date"
+          value={newExpense.date}
+          onChange={e => setNewExpense({ ...newExpense, date: e.target.value })}
+        />
+        <select
+          value={newExpense.category}
+          onChange={e => setNewExpense({ ...newExpense, category: e.target.value })}
         >
-          {editingId ? 'Update Expense' : 'Add Expense'}
-        </button>
+          {categoryList.map(cat => (
+            <option key={cat} value={cat}>
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </option>
+          ))}
+        </select>
+        <button onClick={addExpense}>Add</button>
       </div>
 
-      <div className="expenses-list">
-        {expenses.map(expense => (
-          <div key={expense.id} className="expense-item">
-            <div className="expense-info">
-              <div className="expense-main">
-                <h3 className="expense-title">{expense.title}</h3>
-                <span className="expense-date">{expense.date}</span>
-              </div>
-              <div className="expense-details">
-                <span 
-                  className="expense-category"
-                  style={{ backgroundColor: getCategoryColor(expense.category) }}
-                >
-                  {expense.category}
-                </span>
-                <span className="expense-amount">${expense.amount.toFixed(2)}</span>
-              </div>
-            </div>
-            <div className="expense-actions">
-              <button 
-                onClick={() => startEdit(expense)}
-                className="edit-btn"
-              >
-                <FaEdit />
-              </button>
-              <button 
-                onClick={() => deleteExpense(expense.id)}
-                className="delete-btn"
-              >
-                <FaTrash />
-              </button>
-            </div>
+      {/* Category Cards */}
+      <div className="category-cards">
+        {categoryList.map(cat => (
+          <div
+            key={cat}
+            className="category-card"
+            style={{ background: getCategoryGradient(cat) }}
+          >
+            <h3>{cat.charAt(0).toUpperCase() + cat.slice(1)}</h3>
+            <p className="amount">{categoryTotals[cat].toFixed(2)} zł</p>
           </div>
         ))}
       </div>
 
-      {expenses.length === 0 && (
-        <div className="empty-state">
-          <p>No expenses yet. Add your first expense to get started!</p>
-          <img 
-            src={mascot}
-            alt="Loading mascot" 
-            className="loading-mascot"
-          />
+      <div className="monthly-expenses">
+        <div className="month-navigation">
+          <button onClick={() => {
+            if (viewMonth === 1) {
+              setViewMonth(12);
+              setViewYear(viewYear - 1);
+            } else {
+              setViewMonth(viewMonth - 1);
+            }
+          }}>
+            &lt; Prev
+          </button>
+
+          <span>{viewMonth}/{viewYear}</span>
+
+          <button onClick={() => {
+            if (viewMonth === 12) {
+              setViewMonth(1);
+              setViewYear(viewYear + 1);
+            } else {
+              setViewMonth(viewMonth + 1);
+            }
+          }}>
+            Next &gt;
+          </button>
         </div>
-      )}
+
+        <h3>
+        {monthNames[viewMonth - 1]} {viewYear}: {monthlyTotal.toFixed(2)} zł
+      </h3>
+
+        {expenses.length === 0 && <p>No expenses yet this month.</p>}
+
+        {expenses.map(e => (
+          <div key={e.id} className="expense-row">
+            <span>
+              {e.title} ({e.category}) - {e.amount.toFixed(2)} zł - {e.date}
+            </span>
+            <button onClick={() => deleteExpense(e.id, e.category, e.amount, e.date)}>
+              <FaTrash />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

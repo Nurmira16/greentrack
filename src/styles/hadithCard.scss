@@ -1,22 +1,36 @@
 .hadith-card {
-    background: var(--secondary-white);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-    margin-bottom: var(--spacing-xl);
+    background: #fff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin: 20px auto;
     text-align: center;
+    font-family: 'Merriweather', serif;
+    transition: transform 0.2s ease;
+  
+    &:hover {
+      transform: translateY(-2px);
+    }
   
     .hadith-text {
-      font-size: var(--font-size-base);
-      font-style: italic;
-      color: var(--accent-dark);
-      margin-bottom: var(--spacing-sm);
+      font-size: 1rem;
+      font-weight: 300;  // thin
+      color: #222;
+      line-height: 1.2;  // tight line spacing
+      white-space: nowrap; // keep on one line
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   
     .hadith-reference {
-      font-size: var(--font-size-sm);
-      font-weight: 600;
-      color: var(--accent-teal);
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+    }
+  
+    &.loading {
+      color: #aaa;
+      font-style: italic;
     }
   }
   
