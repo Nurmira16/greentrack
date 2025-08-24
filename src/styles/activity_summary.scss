@@ -71,6 +71,7 @@
         background: var(--accent-teal);
         color: white;
       }
+
       &.minus {
         background: var(--accent-red);
         color: white;
@@ -78,6 +79,33 @@
 
       &:hover {
         transform: scale(1.1);
+      }
+    }
+  }
+}
+
+/* LeetCode row */
+.activity-row.leetcode {
+
+  .controls {
+    flex: 0; // do not grow
+    .control-btn.leetcode-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: var(--accent-teal);
+      color: white;
+      font-size: 16px;
+      transition: transform 0.2s ease, background 0.2s ease;
+
+      &:hover {
+        transform: scale(1.1);
+        background: var(--primary-orange);
       }
     }
   }

@@ -4,13 +4,10 @@ import {
   FaChartLine, 
   FaCreditCard, 
   FaCheckSquare, 
-  FaBullseye, 
-  FaCalendarDay, 
   FaTint, 
   FaRobot 
 } from 'react-icons/fa';
 import '../styles/navigation.scss';
-import logo from '../assets/greentrack logo.png'
 
 const Navigation = () => {
   const [isMobile, setIsMobile] = useState(false);
