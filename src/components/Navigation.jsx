@@ -4,7 +4,6 @@ import {
   FaChartLine, 
   FaCreditCard, 
   FaCheckSquare, 
-  FaRobot 
 } from 'react-icons/fa';
 import '../styles/navigation.scss';
 
@@ -25,7 +24,6 @@ const Navigation = () => {
     { path: '/', label: 'Overview', icon: FaChartLine },
     { path: '/expenses', label: 'Expenses', icon: FaCreditCard },
     { path: '/todopage', label: 'To-Do App', icon: FaCheckSquare },
-    { path: '/ai-helper', label: 'AI Helper', icon: FaRobot }
   ];
 
   if (isMobile) {
