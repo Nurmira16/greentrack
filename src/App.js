@@ -1,30 +1,25 @@
-import React from 'react';
-import Main from './pages/Main';
-import Layout from './layouts/Layout';
-import { useEffect, useState } from "react";
-import supabase from './supabaseClient'
-
+import React, { useEffect, useState } from "react";
+import Main from "./pages/Main";
+import Layout from "./layouts/Layout";
+import supabase from "./supabaseClient";
+import Auth from "./components/Auth";
 
 const App = () => {
-  // const [instruments, setInstruments] = useState([]);
-  // useEffect(() => {
-  //   getInstruments();
-  // }, []);
-  // async function getInstruments() {
-  //   const { data } = await supabase.from("todos").select();
-  //   setInstruments(data);
-  // }
+  const [user, setUser] = useState(null);
+
+  // Check if already logged in
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setUser(data.user);
+    });
+  }, []);
+
+  if (!user) return <Auth onLogin={setUser} />; // show login if no user
+
   return (
-    <div>
-      <Layout>
-      {/* <ul>
-      {instruments?.map((instrument) => (
-        <li key={instrument.id}>{instrument.task}</li>
-      ))}
-    </ul> */}
-      <Main/>
-      </Layout>
-    </div>
+    <Layout>
+      <Main user={user} />
+    </Layout>
   );
 };
 

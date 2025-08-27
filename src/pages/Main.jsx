@@ -6,19 +6,19 @@ import Todolist from '../components/Todolist';
 import Expenses from '../components/Expenses';
 import TodoPage from '../components/TodoPage';
 
-const Main = () => {
+const Main = ({ user }) => {
     return (
-        <div>
-           <Routes>
-                <Route path="/" element={<Overview />} />
-                <Route path="/expenses" element={<Expenses />} />
-                <Route path="/todo" element={<Todolist />} />
-                <Route path="/todopage" element={<TodoPage />} />
-                <Route path="/workout" element={<ActivitySummary/>} />
-
-           </Routes>
-        </div>
+      <div>
+        <Routes>
+          <Route path="/" element={<Overview user={user} />} />
+          <Route path="/expenses" element={<Expenses user={user} />} />
+          <Route path="/todo" element={<Todolist user={user} />} />
+          <Route path="/todopage" element={<TodoPage user={user} />} />
+          <Route path="/workout" element={<ActivitySummary user={user} />} />
+        </Routes>
+      </div>
     );
-};
+  };
+  
 
 export default Main;

@@ -32,10 +32,13 @@ const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement }
 };
 
 // 🔹 Main Summary Component
-const ActivitySummary = () => {
+const ActivitySummary = ({user}) => {
   const [activities, setActivities] = useState(null);
 
   useEffect(() => {
+
+    if (!user) return;
+
     const loadActivities = async () => {
       const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
       console.log(today)
@@ -45,14 +48,18 @@ const ActivitySummary = () => {
         const { data: activitiesData, error } = await supabase
           .from('activities')
           .select('*')
+          .eq("user_id", user.id) 
           .limit(1)
           .single();
+
+          console.log("Activities response:", { activitiesData, error });
 
         if (error && error.code === 'PGRST116') {
           // No row → create default
           const { data: newRow, error: insertError } = await supabase
             .from('activities')
             .insert([{
+              user_id: user.id, 
               date: today,
               book_current: 0,
               book_target: 50,
@@ -108,7 +115,7 @@ const ActivitySummary = () => {
     };
 
     loadActivities();
-  }, []);
+  }, [user]);
 
   const updateActivity = async (field, value) => {
     if (!activities || !activities.id) return;

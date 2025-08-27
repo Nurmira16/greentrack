@@ -1,0 +1,75 @@
+// src/styles/auth.scss
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f5f6fa; // soft background similar to Overview
+  
+    .auth-card {
+      background: white;
+      padding: 3rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      text-align: center;
+  
+      h2 {
+        color: #6c63ff; // match your primary color
+        margin-bottom: 2rem;
+        font-weight: 700;
+      }
+  
+      .auth-input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        margin-bottom: 1.2rem;
+        border-radius: 0.8rem;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        outline: none;
+        transition: border 0.2s;
+  
+        &:focus {
+          border-color: #6c63ff;
+        }
+      }
+  
+      .auth-btn {
+        width: 100%;
+        padding: 0.8rem 0;
+        border: none;
+        border-radius: 0.8rem;
+        background: #6c63ff;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+  
+        &:hover {
+          background: #5751d3;
+        }
+  
+        &:disabled {
+          background: #aaa;
+          cursor: not-allowed;
+        }
+      }
+  
+      .auth-toggle {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+  
+        span {
+          color: #6c63ff;
+          cursor: pointer;
+          font-weight: 600;
+  
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+  

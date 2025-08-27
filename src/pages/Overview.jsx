@@ -4,7 +4,7 @@ import Todolist from '../components/Todolist';
 import '../styles/overview.scss';
 import HadithCard from '../components/HadithCard';
 
-const Overview = () => {
+const Overview = ({user}) => {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [viewMode, setViewMode] = useState('activity'); // 'activity' | 'week' | 'month'
 
@@ -32,7 +32,7 @@ const Overview = () => {
           </div>
 
           <div className="activity-summary-wrapper">
-            <ActivitySummary onSelectActivity={handleSelectActivity} />
+            <ActivitySummary user={user} onSelectActivity={handleSelectActivity} />
           </div>
         </div>
 
