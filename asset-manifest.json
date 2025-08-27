@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/greentrack/static/css/main.7eb0e839.css",
-    "main.js": "/greentrack/static/js/main.1ff6c02d.js",
+    "main.css": "/greentrack/static/css/main.45ae1e45.css",
+    "main.js": "/greentrack/static/js/main.2f53ecd1.js",
     "static/media/loading_mascot.png": "/greentrack/static/media/loading_mascot.4bb31ae13aa243cad822.png",
     "index.html": "/greentrack/index.html",
-    "main.7eb0e839.css.map": "/greentrack/static/css/main.7eb0e839.css.map",
-    "main.1ff6c02d.js.map": "/greentrack/static/js/main.1ff6c02d.js.map"
+    "main.45ae1e45.css.map": "/greentrack/static/css/main.45ae1e45.css.map",
+    "main.2f53ecd1.js.map": "/greentrack/static/js/main.2f53ecd1.js.map"
   },
   "entrypoints": [
-    "static/css/main.7eb0e839.css",
-    "static/js/main.1ff6c02d.js"
+    "static/css/main.45ae1e45.css",
+    "static/js/main.2f53ecd1.js"
   ]
 }
