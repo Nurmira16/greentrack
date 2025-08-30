@@ -1,7 +1,9 @@
+// src/components/Expenses.jsx
 import React, { useState, useEffect } from 'react';
 import '../styles/expenses.scss';
 import supabase from '../supabaseClient';
 import { FaTrash } from 'react-icons/fa';
+import { useAuth } from '../context/AuthProvider';
 
 const categoryList = ['food', 'transport', 'gifts', 'rent', 'extra'];
 
@@ -16,167 +18,72 @@ const getCategoryGradient = (category) => {
   return gradients[category] || '#264653';
 };
 
-const currentMonth = new Date().getMonth() + 1;
-const currentYear = new Date().getFullYear();
-
 const Expenses = () => {
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [newExpense, setNewExpense] = useState({ title: '', amount: '', category: 'food', date: '' });
+  const [viewMonth, setViewMonth] = useState(new Date().getMonth() + 1);
+  const [viewYear, setViewYear] = useState(new Date().getFullYear());
 
-  const [viewMonth, setViewMonth] = useState(currentMonth);
-  const [viewYear, setViewYear] = useState(currentYear);
-
-  useEffect(() => {
-    fetchExpenses();
-  }, [viewMonth, viewYear]);
-
+  // Fetch current user's expenses for the selected month
   const fetchExpenses = async () => {
+    if (!user) return;
     const { data, error } = await supabase
       .from('expenses')
       .select('*')
+      .eq('user_email', user.email)
       .gte('date', `${viewYear}-${String(viewMonth).padStart(2, '0')}-01`)
       .lte('date', `${viewYear}-${String(viewMonth).padStart(2, '0')}-31`);
-    if (!error) setExpenses(data);
+    if (!error) setExpenses(data || []);
   };
 
+  useEffect(() => { fetchExpenses(); }, [viewMonth, viewYear, user]);
+
   const addExpense = async () => {
-    if (!newExpense.title || !newExpense.amount || !newExpense.date) return;
+    if (!user || !newExpense.title || !newExpense.amount || !newExpense.date) return;
 
-    const expenseToInsert = { 
-      ...newExpense, 
-      amount: parseFloat(newExpense.amount) 
-    };
+    const expenseToInsert = { ...newExpense, amount: parseFloat(newExpense.amount), user_email: user.email };
+    const { data: insertedData, error } = await supabase.from('expenses').insert([expenseToInsert]).select();
+    if (error) return console.error(error);
 
-    const expenseDate = new Date(newExpense.date);
-    const expenseMonth = expenseDate.getMonth() + 1;
-    const expenseYear = expenseDate.getFullYear();
-
-    const { data: insertedData, error: insertError } = await supabase
-      .from('expenses')
-      .insert([expenseToInsert])
-      .select();
-
-    if (insertError) {
-      console.error(insertError);
-      return;
-    }
-    if (!insertedData || insertedData.length === 0) return;
-
-    const insertedExpense = insertedData[0];
-
-    const { data: currentHistory, error: fetchError } = await supabase
-      .from('monthly_expense_history')
-      .select('id, total')
-      .eq('month', expenseMonth)
-      .eq('year', expenseYear)
-      .single();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error(fetchError);
-    }
-
-    if (currentHistory) {
-      const newTotal = currentHistory.total + expenseToInsert.amount;
-      await supabase
-        .from('monthly_expense_history')
-        .update({ total: newTotal })
-        .eq('id', currentHistory.id);
-    } else {
-      await supabase
-        .from('monthly_expense_history')
-        .insert([
-          {
-            month: expenseMonth,
-            year: expenseYear,
-            total: expenseToInsert.amount
-          }
-        ]);
-    }
-
-    if (expenseMonth === viewMonth && expenseYear === viewYear) {
-      setExpenses([...expenses, insertedExpense]);
-    }
-
+    setExpenses([...expenses, insertedData[0]]);
     setNewExpense({ title: '', amount: '', category: 'food', date: '' });
   };
 
-  const deleteExpense = async (id, category, amount, date) => {
-    const expenseDate = new Date(date);
-    const expenseMonth = expenseDate.getMonth() + 1;
-    const expenseYear = expenseDate.getFullYear();
-
-    const { error } = await supabase
-      .from('expenses')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error("Delete Error:", error);
-      return;
-    }
-
+  const deleteExpense = async (id) => {
+    const { error } = await supabase.from('expenses').delete().eq('id', id);
+    if (error) return console.error(error);
     setExpenses(expenses.filter(e => e.id !== id));
-
-    const { data: currentMonthTotal } = await supabase
-      .from('monthly_expense_history')
-      .select('*')
-      .eq('month', expenseMonth)
-      .eq('year', expenseYear)
-      .single();
-
-    if (currentMonthTotal) {
-      const newTotal = currentMonthTotal.total - amount;
-      await supabase
-        .from('monthly_expense_history')
-        .update({ total: newTotal >= 0 ? newTotal : 0 })
-        .eq('id', currentMonthTotal.id);
-    }
   };
 
+  // Calculate category totals
   const categoryTotals = categoryList.reduce((acc, cat) => {
-    acc[cat] = expenses
-      .filter(e => e.category === cat)
-      .reduce((sum, e) => sum + e.amount, 0);
+    acc[cat] = expenses.filter(e => e.category === cat).reduce((sum, e) => sum + e.amount, 0);
     return acc;
   }, {});
 
   const monthlyTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
   ];
+
   return (
     <div className="expenses-container">
       <h2>Expense Tracker</h2>
 
+      {/* Add Expense Form */}
       <div className="expense-form">
-        <input
-          type="text"
-          placeholder="Title"
-          value={newExpense.title}
-          onChange={e => setNewExpense({ ...newExpense, title: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Amount"
-          value={newExpense.amount}
-          onChange={e => setNewExpense({ ...newExpense, amount: e.target.value })}
-        />
-        <input
-          type="date"
-          value={newExpense.date}
-          onChange={e => setNewExpense({ ...newExpense, date: e.target.value })}
-        />
-        <select
-          value={newExpense.category}
-          onChange={e => setNewExpense({ ...newExpense, category: e.target.value })}
-        >
-          {categoryList.map(cat => (
-            <option key={cat} value={cat}>
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </option>
-          ))}
+        <input type="text" placeholder="Title" value={newExpense.title} 
+               onChange={e => setNewExpense({...newExpense, title:e.target.value})}/>
+        <input type="number" placeholder="Amount" value={newExpense.amount} 
+               onChange={e => setNewExpense({...newExpense, amount:e.target.value})}/>
+        <input type="date" value={newExpense.date} 
+               onChange={e => setNewExpense({...newExpense, date:e.target.value})}/>
+        <select value={newExpense.category} 
+                onChange={e => setNewExpense({...newExpense, category:e.target.value})}>
+          {categoryList.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase()+cat.slice(1)}</option>)}
         </select>
         <button onClick={addExpense}>Add</button>
       </div>
@@ -184,58 +91,34 @@ const Expenses = () => {
       {/* Category Cards */}
       <div className="category-cards">
         {categoryList.map(cat => (
-          <div
-            key={cat}
-            className="category-card"
-            style={{ background: getCategoryGradient(cat) }}
-          >
-            <h3>{cat.charAt(0).toUpperCase() + cat.slice(1)}</h3>
+          <div key={cat} className="category-card" style={{background:getCategoryGradient(cat)}}>
+            <h3>{cat.charAt(0).toUpperCase()+cat.slice(1)}</h3>
             <p className="amount">{categoryTotals[cat].toFixed(2)} zł</p>
           </div>
         ))}
       </div>
 
+      {/* Monthly Expenses List */}
       <div className="monthly-expenses">
         <div className="month-navigation">
           <button onClick={() => {
-            if (viewMonth === 1) {
-              setViewMonth(12);
-              setViewYear(viewYear - 1);
-            } else {
-              setViewMonth(viewMonth - 1);
-            }
-          }}>
-            &lt; Prev
-          </button>
-
-          <span>{viewMonth}/{viewYear}</span>
-
+            if(viewMonth === 1){ setViewMonth(12); setViewYear(viewYear-1); } 
+            else setViewMonth(viewMonth-1);
+          }}>&lt; Prev</button>
+          <span>{monthNames[viewMonth-1]} {viewYear}</span>
           <button onClick={() => {
-            if (viewMonth === 12) {
-              setViewMonth(1);
-              setViewYear(viewYear + 1);
-            } else {
-              setViewMonth(viewMonth + 1);
-            }
-          }}>
-            Next &gt;
-          </button>
+            if(viewMonth === 12){ setViewMonth(1); setViewYear(viewYear+1); } 
+            else setViewMonth(viewMonth+1);
+          }}>Next &gt;</button>
         </div>
 
-        <h3>
-        {monthNames[viewMonth - 1]} {viewYear}: {monthlyTotal.toFixed(2)} zł
-      </h3>
-
-        {expenses.length === 0 && <p>No expenses yet this month.</p>}
+        <h3>Total: {monthlyTotal.toFixed(2)} zł</h3>
+        {expenses.length === 0 && <p>No expenses this month.</p>}
 
         {expenses.map(e => (
           <div key={e.id} className="expense-row">
-            <span>
-              {e.title} ({e.category}) - {e.amount.toFixed(2)} zł - {e.date}
-            </span>
-            <button onClick={() => deleteExpense(e.id, e.category, e.amount, e.date)}>
-              <FaTrash />
-            </button>
+            <span>{e.title} ({e.category}) - {e.amount.toFixed(2)} zł - {e.date}</span>
+            <button onClick={() => deleteExpense(e.id)}><FaTrash /></button>
           </div>
         ))}
       </div>

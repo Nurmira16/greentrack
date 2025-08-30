@@ -5,6 +5,7 @@ import Overview from './Overview';
 import Todolist from '../components/Todolist';
 import Expenses from '../components/Expenses';
 import TodoPage from '../components/TodoPage';
+import Profile from '../components/Profile';
 
 const Main = ({ user }) => {
     return (
@@ -15,6 +16,9 @@ const Main = ({ user }) => {
           <Route path="/todo" element={<Todolist user={user} />} />
           <Route path="/todopage" element={<TodoPage user={user} />} />
           <Route path="/workout" element={<ActivitySummary user={user} />} />
+          <Route path="/profile" element={<Profile user={user} />} />
+
+
         </Routes>
       </div>
     );

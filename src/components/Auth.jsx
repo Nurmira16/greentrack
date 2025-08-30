@@ -1,9 +1,9 @@
 // src/pages/Auth.jsx
 import React, { useState } from "react";
-import { signIn, signUp } from "../authService";
-import "../styles/auth.scss"; // new SCSS file
+import supabase from "../supabaseClient";
+import "../styles/auth.scss";
 
-export default function Auth({ onLogin }) {
+export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -11,12 +11,29 @@ export default function Auth({ onLogin }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const fn = isRegister ? signUp : signIn;
-    const { data, error } = await fn(email, password);
+    let error;
+
+    if (isRegister) {
+      // Sign up
+      const { data, error: signUpError } = await supabase.auth.signUp(
+        { email, password },
+        { redirectTo: "https://Nurmira16.github.io/greentrack" } // your GitHub Pages URL
+      );
+      error = signUpError;
+      if (!error) alert("Check your email to confirm your account!");
+    } else {
+      // Sign in
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      error = signInError;
+    }
+
     setLoading(false);
 
     if (error) alert(error.message);
-    else onLogin(data.user);
+    // No need to call onLogin — AuthProvider updates the user automatically
   };
 
   return (

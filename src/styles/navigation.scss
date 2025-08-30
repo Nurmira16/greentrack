@@ -48,6 +48,61 @@
   }
 }
 
+/* Profile section for sidebar */
+.sidebar-profile {
+  margin-top: auto; // stick to bottom
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--secondary-gray);
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    text-decoration: none;
+    color: var(--accent-dark);
+    font: 500 16px var(--font);
+    border-radius: var(--radius-md);
+    transition: 0.3s;
+
+    .nav-icon {
+      margin-right: var(--spacing-md);
+      font-size: 20px;
+      color: var(--primary-orange);
+      transition: 0.3s;
+    }
+
+    &:hover {
+      background: var(--primary-peach);
+      color: var(--primary-purple);
+      transform: translateX(4px);
+
+      .nav-icon {
+        color: var(--primary-purple);
+      }
+    }
+
+    &.active {
+      background: var(--primary-purple);
+      color: #fff;
+      box-shadow: var(--shadow);
+
+      .nav-icon {
+        color: #fff;
+      }
+    }
+  }
+}
+
+/* Profile in bottom navigation */
+.bottom-navigation {
+  .nav-item {
+    &.profile {
+      border-left: 1px solid var(--secondary-gray);
+    }
+  }
+}
+
+
 /* Responsive */
 @media (max-width:767px) { .sidebar-navigation { display:none; } .layout .content { margin-bottom:80px; } }
 @media (min-width:768px) { .bottom-navigation { display:none; } .layout .content { margin-left:280px; } }

@@ -1,0 +1,83 @@
+.profile-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #6C63FF, #F4A261);
+    font-family: 'Inter', sans-serif;
+  
+    .profile-card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      transition: transform 0.3s;
+  
+      &:hover {
+        transform: translateY(-5px);
+      }
+  
+      .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        object-fit: cover;
+      }
+  
+      .username {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+  
+      .email, .created {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 10px;
+      }
+  
+      .badges {
+        margin: 15px 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+  
+        .badge {
+          background: #6C63FF;
+          color: #fff;
+          padding: 5px 12px;
+          border-radius: 12px;
+          font-size: 12px;
+        }
+      }
+  
+      .logout-btn {
+        padding: 10px 25px;
+        background: #F4A261;
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+  
+        &:hover {
+          background: #F29E5D;
+        }
+      }
+    }
+  }
+  
+  /* Desktop tweaks */
+  @media (min-width: 768px) {
+    .profile-page {
+      padding: 60px;
+    }
+  }
+  

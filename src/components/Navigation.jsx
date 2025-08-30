@@ -4,6 +4,7 @@ import {
   FaChartLine, 
   FaCreditCard, 
   FaCheckSquare, 
+  FaUserCircle 
 } from 'react-icons/fa';
 import '../styles/navigation.scss';
 
@@ -42,6 +43,15 @@ const Navigation = () => {
             </NavLink>
           );
         })}
+
+        {/* Profile on mobile */}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          <FaUserCircle className="nav-icon" />
+          <span className="nav-label">Profile</span>
+        </NavLink>
       </nav>
     );
   }
@@ -70,6 +80,17 @@ const Navigation = () => {
           })}
         </ul>
       </nav>
+
+      {/* Profile section at bottom */}
+      <div className="sidebar-profile">
+        <NavLink 
+          to="/profile" 
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <FaUserCircle className="nav-icon" />
+          <span>Profile</span>
+        </NavLink>
+      </div>
     </aside>
   );
 };
