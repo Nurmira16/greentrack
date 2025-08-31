@@ -4,14 +4,16 @@ import supabase from '../supabaseClient';
 import '../styles/activity_summary.scss';
 
 // 🔹 Single Row Component
-const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement }) => {
+const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement, unit }) => {
   const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
   return (
     <div className="activity-row">
       <div className="info">
         <span className="label">{label}</span>
-        <span className="target-info">{current} / {target}</span>
+        <span className="target-info">
+          {current} / {target} {unit}
+        </span>
       </div>
 
       <div className="progress-wrapper">
@@ -32,90 +34,54 @@ const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement }
 };
 
 // 🔹 Main Summary Component
-const ActivitySummary = ({user}) => {
+const ActivitySummary = ({ user }) => {
   const [activities, setActivities] = useState(null);
 
   useEffect(() => {
-
     if (!user) return;
 
     const loadActivities = async () => {
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-      console.log(today)
+      const today = new Date().toISOString().slice(0, 10);
 
-      try {
-        // Fetch today's activities (or latest row)
-        const { data: activitiesData, error } = await supabase
-          .from('activities')
-          .select('*')
-          .eq("user_id", user.id) 
-          .limit(1)
-          .single();
+      const { data: activitiesData, error } = await supabase
+        .from("activities")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("date", today)
+        .maybeSingle();
 
-          console.log("Activities response:", { activitiesData, error });
+      console.log("Activities response:", { activitiesData, error });
 
-        if (error && error.code === 'PGRST116') {
-          // No row → create default
-          const { data: newRow, error: insertError } = await supabase
-            .from('activities')
+      if (!activitiesData) {
+        // No row → insert default
+                  const { data: newRow, error: insertError } = await supabase
+            .from("activities")
             .insert([{
-              user_id: user.id, 
+              user_id: user.id,
+              user_email: user.email,   // ✅ add this
               date: today,
               book_current: 0,
               book_target: 50,
               calories_current_kcal: 0,
               calories_target_kcal: 2000,
-              leetcode_problem: null
+              leetcode_problem: null,
             }])
             .select()
             .single();
 
-          if (insertError) console.error(insertError);
-          else setActivities(newRow);
 
-        } else if (activitiesData) {
-          const rowDate = activitiesData.date ? activitiesData.date.slice(0,10) : today;
-
-          // Daily reset if the date is not today
-          if (rowDate !== today) {
-            // Save yesterday's progress to history
-            await supabase.from('activities_history').insert([{
-              date: rowDate,
-              book_done: activitiesData.book_current || 0,
-              calories_done_kcal: activitiesData.calories_current_kcal || 0,
-              leetcode_problem: activitiesData.leetcode_problem || null
-            }]);
-
-            // Reset today's activities
-            await supabase
-              .from('activities')
-              .update({
-                date: today,
-                book_current: 0,
-                calories_current_kcal: 0,
-                leetcode_problem: null
-              })
-              .eq('id', activitiesData.id);
-
-            // Reload updated row
-            const { data: updatedRow } = await supabase
-              .from('activities')
-              .select('*')
-              .limit(1)
-              .single();
-
-            setActivities(updatedRow);
-          } else {
-            setActivities(activitiesData);
-          }
+        if (insertError) {
+          console.error("Insert error:", insertError);
+        } else {
+          setActivities(newRow);
         }
-      } catch (err) {
-        console.error("Error loading activities:", err);
+      } else {
+        setActivities(activitiesData);
       }
     };
 
     loadActivities();
-  }, [user]);
+  }, [user]); // ✅ reruns when user loads
 
   const updateActivity = async (field, value) => {
     if (!activities || !activities.id) return;
@@ -124,11 +90,11 @@ const ActivitySummary = ({user}) => {
     setActivities(updated);
 
     const { error } = await supabase
-      .from('activities')
+      .from("activities")
       .update({ [field]: value, updated_at: new Date() })
-      .eq('id', activities.id);
+      .eq("id", activities.id);
 
-    if (error) console.error('Update error:', error);
+    if (error) console.error("Update error:", error);
   };
 
   if (!activities) return <p>Loading...</p>;
@@ -139,20 +105,22 @@ const ActivitySummary = ({user}) => {
       <ActivityRow
         label="Reading"
         current={activities.book_current}
-        target={`${activities.book_target} pages`}
+        target={activities.book_target}
+        unit="pages"
         color="#6C63FF"
-        onIncrement={() => updateActivity('book_current', activities.book_current + 5)}
-        onDecrement={() => updateActivity('book_current', Math.max(0, activities.book_current - 5))}
+        onIncrement={() => updateActivity("book_current", activities.book_current + 5)}
+        onDecrement={() => updateActivity("book_current", Math.max(0, activities.book_current - 5))}
       />
 
       {/* Calories */}
       <ActivityRow
         label="Calories"
         current={activities.calories_current_kcal}
-        target={`${activities.calories_target_kcal} kcal`}
+        target={activities.calories_target_kcal}
+        unit="kcal"
         color="#E76F51"
-        onIncrement={() => updateActivity('calories_current_kcal', activities.calories_current_kcal + 100)}
-        onDecrement={() => updateActivity('calories_current_kcal', Math.max(0, activities.calories_current_kcal - 100))}
+        onIncrement={() => updateActivity("calories_current_kcal", activities.calories_current_kcal + 100)}
+        onDecrement={() => updateActivity("calories_current_kcal", Math.max(0, activities.calories_current_kcal - 100))}
       />
 
       {/* LeetCode Problem */}
@@ -170,11 +138,11 @@ const ActivitySummary = ({user}) => {
           <button
             onClick={async () => {
               if (activities.leetcode_problem) {
-                updateActivity('leetcode_problem', null);
+                updateActivity("leetcode_problem", null);
               } else {
                 const problem = prompt("Enter LeetCode problem name:");
                 if (problem && problem.trim() !== "") {
-                  updateActivity('leetcode_problem', problem.trim());
+                  updateActivity("leetcode_problem", problem.trim());
                 }
               }
             }}
