@@ -3,25 +3,19 @@ import { FaCheck, FaPlus, FaMinus } from 'react-icons/fa';
 import supabase from '../supabaseClient';
 import '../styles/activity_summary.scss';
 
-// 🔹 Single Row Component
 const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement, unit }) => {
   const percentage = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
   return (
-    <div className="activity-row">
+    <div className="activity-row small">
       <div className="info">
         <span className="label">{label}</span>
-        <span className="target-info">
-          {current} / {target} {unit}
-        </span>
+        <span className="target-info">{current} / {target} {unit}</span>
       </div>
 
       <div className="progress-wrapper">
         <div className="progress-bar">
-          <div
-            className="fill"
-            style={{ width: `${percentage}%`, background: color }}
-          />
+          <div className="fill" style={{ width: `${percentage}%`, background: color }} />
         </div>
       </div>
 
@@ -33,7 +27,6 @@ const ActivityRow = ({ label, current, target, color, onIncrement, onDecrement, 
   );
 };
 
-// 🔹 Main Summary Component
 const ActivitySummary = ({ user }) => {
   const [activities, setActivities] = useState(null);
 
@@ -43,51 +36,73 @@ const ActivitySummary = ({ user }) => {
     const loadActivities = async () => {
       const today = new Date().toISOString().slice(0, 10);
 
-      const { data: activitiesData, error } = await supabase
-        .from("activities")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .maybeSingle();
+      try {
+        const { data: activitiesData, error } = await supabase
+          .from("activities")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("date", today)
+          .maybeSingle();
 
-      console.log("Activities response:", { activitiesData, error });
-
-      if (!activitiesData) {
-        // No row → insert default
-                  const { data: newRow, error: insertError } = await supabase
+        if (!activitiesData) {
+          // upsert with all NOT NULL fields
+          const { data: newRow, error: upsertError } = await supabase
             .from("activities")
-            .insert([{
-              user_id: user.id,
-              user_email: user.email,   // ✅ add this
-              date: today,
-              book_current: 0,
-              book_target: 50,
-              calories_current_kcal: 0,
-              calories_target_kcal: 2000,
-              leetcode_problem: null,
-            }])
+            .upsert(
+              {
+                user_id: user.id,
+                user_email: user.email,
+                date: today,
+                book_current: 0,
+                book_target: 20,
+                calories_current_kcal: 0,
+                calories_target_kcal: 1500,
+                quran_pages: 0,
+                quran_pages: 5,
+                leetcode_problem: null
+              },
+              { onConflict: ["user_id", "date"] }
+            )
             .select()
-            .single();
+            .maybeSingle();
 
-
-        if (insertError) {
-          console.error("Insert error:", insertError);
+          if (upsertError) {
+            console.error("Upsert error:", upsertError);
+            setActivities({
+              book_current: 0,
+              book_target: 20,
+              calories_current_kcal: 0,
+              calories_target_kcal: 1500,
+              quran_pages: 0,
+              quran_target: 5,
+              leetcode_problem: null
+            });
+          } else {
+            setActivities(newRow);
+          }
         } else {
-          setActivities(newRow);
+          setActivities(activitiesData);
         }
-      } else {
-        setActivities(activitiesData);
+      } catch (err) {
+        console.error("Error loading activities:", err);
+        setActivities({
+          book_current: 0,
+          book_target: 20,
+          calories_current_kcal: 0,
+          calories_target_kcal: 1500,
+          quran_pages: 0,
+          quran_target: 5,
+          leetcode_problem: null
+        });
       }
     };
 
     loadActivities();
-  }, [user]); // ✅ reruns when user loads
+  }, [user]);
 
   const updateActivity = async (field, value) => {
     if (!activities || !activities.id) return;
-
-    const updated = { ...activities, [field]: value };
-    setActivities(updated);
+    setActivities({ ...activities, [field]: value });
 
     const { error } = await supabase
       .from("activities")
@@ -101,7 +116,6 @@ const ActivitySummary = ({ user }) => {
 
   return (
     <div className="summary-rows">
-      {/* Book Pages */}
       <ActivityRow
         label="Reading"
         current={activities.book_current}
@@ -112,7 +126,16 @@ const ActivitySummary = ({ user }) => {
         onDecrement={() => updateActivity("book_current", Math.max(0, activities.book_current - 5))}
       />
 
-      {/* Calories */}
+      <ActivityRow
+        label="Quran"
+        current={activities.quran_pages}
+        target={5}
+        unit="pages"
+        color="#2A9D8F"
+        onIncrement={() => updateActivity("quran_pages", activities.quran_pages + 1)}
+        onDecrement={() => updateActivity("quran_pages", Math.max(0, activities.quran_pages - 1))}
+      />
+
       <ActivityRow
         label="Calories"
         current={activities.calories_current_kcal}
@@ -123,17 +146,12 @@ const ActivitySummary = ({ user }) => {
         onDecrement={() => updateActivity("calories_current_kcal", Math.max(0, activities.calories_current_kcal - 100))}
       />
 
-      {/* LeetCode Problem */}
-      <div className="activity-row leetcode">
+      <div className="activity-row leetcode small">
         <div className="info">
           <span className="label">LeetCode</span>
-          <span className="target-info">
-            {activities.leetcode_problem || "Not Done"}
-          </span>
+          <span className="target-info">{activities.leetcode_problem || "Not Done"}</span>
         </div>
-
         <div className="progress-wrapper" style={{ flex: 2 }} />
-
         <div className="controls">
           <button
             onClick={async () => {
@@ -141,9 +159,7 @@ const ActivitySummary = ({ user }) => {
                 updateActivity("leetcode_problem", null);
               } else {
                 const problem = prompt("Enter LeetCode problem name:");
-                if (problem && problem.trim() !== "") {
-                  updateActivity("leetcode_problem", problem.trim());
-                }
+                if (problem?.trim()) updateActivity("leetcode_problem", problem.trim());
               }
             }}
             className="control-btn leetcode-btn"

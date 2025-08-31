@@ -6,6 +6,7 @@ import Todolist from '../components/Todolist';
 import Expenses from '../components/Expenses';
 import TodoPage from '../components/TodoPage';
 import Profile from '../components/Profile';
+import CalendarProgress from '../components/Monthly_Calendar';
 
 const Main = ({ user }) => {
     return (
@@ -17,6 +18,7 @@ const Main = ({ user }) => {
           <Route path="/todopage" element={<TodoPage user={user} />} />
           <Route path="/workout" element={<ActivitySummary user={user} />} />
           <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/progress" element={<CalendarProgress user={user} />} />
 
 
         </Routes>

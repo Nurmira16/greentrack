@@ -4,7 +4,8 @@ import {
   FaChartLine, 
   FaCreditCard, 
   FaCheckSquare, 
-  FaUserCircle 
+  FaUserCircle, 
+  FaCalendarAlt
 } from 'react-icons/fa';
 import '../styles/navigation.scss';
 
@@ -24,7 +25,8 @@ const Navigation = () => {
   const menuItems = [
     { path: '/', label: 'Overview', icon: FaChartLine },
     { path: '/expenses', label: 'Expenses', icon: FaCreditCard },
-    { path: '/todopage', label: 'To-Do App', icon: FaCheckSquare },
+    { path: '/todopage', label: 'Todos', icon: FaCheckSquare },
+    { path: '/progress', label: 'Progress', icon: FaCalendarAlt },
   ];
 
   if (isMobile) {
