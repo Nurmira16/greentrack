@@ -8,34 +8,72 @@ const Todolist = ({ mode }) => {
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [todos, setTodos] = useState([]);
+  const [user, setUser] = useState(null);
 
-  useEffect(() => { getTodos(); }, [mode]);
+  // Get logged-in user
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
+  // Fetch todos when mode or user changes
+  useEffect(() => {
+    if (user) getTodos();
+  }, [mode, user]);
 
   const getTodos = async () => {
     try {
-      let query = supabase.from('todos').select();
+      let query = supabase
+        .from('todos')
+        .select()
+        .eq('user_id', user.id);
+
       query = mode ? query.eq('mode', mode) : query.eq('mode', 'day');
+
       const { data, error } = await query;
       if (error) throw error;
+
       const sorted = data.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
       setTodos(sorted);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const addTodo = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !user) return;
     try {
-      await supabase.from('todos').insert([{ task: input.trim(), mode: mode || 'day', completed: false }]);
+      const { data, error } = await supabase
+        .from('todos')
+        .insert([{
+          task: input.trim(),
+          mode: mode || 'day',
+          completed: false,
+          user_id: user.id,
+          user_email: user.email // <- add this
+        }])
+        .select(); // return inserted row
+  
+      if (error) throw error;
+  
       setInput('');
       getTodos();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
+  
 
   const deleteTodo = async (id) => {
     try {
       await supabase.from('todos').delete().eq('id', id);
       getTodos();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const editTodo = async (id, newTask) => {
@@ -45,7 +83,9 @@ const Todolist = ({ mode }) => {
       setEditingId(null);
       setEditValue('');
       getTodos();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const toggleComplete = async (id, completed) => {
@@ -82,13 +122,11 @@ const Todolist = ({ mode }) => {
         <ul className="todolist-list">
           {todos.map(todo => (
             <li key={todo.id} className={`todolist-item ${todo.completed ? 'completed' : ''}`}>
-              {/* Circle bullet for marking complete */}
-              <span 
-                className={`todo-bullet ${todo.completed ? 'done' : ''}`} 
+              <span
+                className={`todo-bullet ${todo.completed ? 'done' : ''}`}
                 onClick={() => toggleComplete(todo.id, todo.completed)}
               ></span>
 
-              {/* Todo text */}
               {editingId === todo.id ? (
                 <input
                   className="edit-input"
@@ -99,7 +137,7 @@ const Todolist = ({ mode }) => {
                   autoFocus
                 />
               ) : (
-                <span 
+                <span
                   className={`todo-text ${todo.completed ? 'completed' : ''}`}
                   onClick={() => startEdit(todo)}
                 >
@@ -107,7 +145,6 @@ const Todolist = ({ mode }) => {
                 </span>
               )}
 
-              {/* Delete button */}
               <button className="delete-btn" onClick={() => deleteTodo(todo.id)}>X</button>
             </li>
           ))}

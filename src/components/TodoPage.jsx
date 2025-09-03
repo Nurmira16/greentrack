@@ -31,7 +31,7 @@ const TodoPage = () => {
 
       {/* Content */}
       <div className="todo-tabs-content">
-        {activeTab === 'daily' && <Todolist mode={null} />} {/* reuses Overview todos */}
+        {activeTab === 'daily' && <Todolist mode={null} />}
         {activeTab === 'week' && <Todolist mode="week" />}
         {activeTab === 'month' && <Todolist mode="month" />}
       </div>
